@@ -191,21 +191,32 @@ header h1 {
     /* Fixed width */
     height: 100px;
     /* Square-ish */
-    border-radius: 20px;
-    font-size: 1rem;
+    border-radius: 24px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     line-height: 1.2;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: linear-gradient(135deg, var(--success-color), #16a34a);
-    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
-    transition: transform 0.1s;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #2563eb 100%);
+    box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.submit-side-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(59, 130, 246, 0.5);
+    filter: brightness(1.1);
 }
 
 .submit-side-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.95) translateY(0);
 }
 
 .scroll-picker {
@@ -263,6 +274,116 @@ header h1 {
     z-index: 10;
     background: rgba(59, 130, 246, 0.05);
     border-radius: 8px;
+}
+
+/* View Management */
+.hidden {
+    display: none !important;
+}
+
+#active-session-view,
+#summary-view {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Bottom Controls */
+.bottom-controls {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.wide-btn {
+    width: 100%;
+    border-radius: 16px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    height: auto;
+    /* Override fixed height of circular btns */
+}
+
+.text-danger-btn {
+    background: none;
+    border: none;
+    color: var(--danger-color);
+    font-size: 0.8rem;
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 0.5rem;
+    transition: all 0.2s;
+}
+
+.text-danger-btn:hover {
+    opacity: 1;
+    text-decoration: underline;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 8px;
+}
+
+/* Secondary Button Style Override for Wide Btn */
+.secondary-btn.wide-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.secondary-btn.wide-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Summary View Specifics */
+.summary-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow: hidden;
+}
+
+.summary-big-total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#final-total {
+    font-size: 4.5rem;
+    font-weight: 900;
+    color: var(--accent-color);
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+}
+
+.summary-list-label {
+    text-align: left;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+#summary-history-list {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 1rem;
+    overflow-y: auto;
+    flex-grow: 1;
 }
 
 /* Updated Action Button */

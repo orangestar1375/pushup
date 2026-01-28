@@ -1,8 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Elements - Common
+    const setsHistoryContainer = document.getElementById('sets-history');
     const scrollContainer = document.getElementById('number-scroll');
     const finishSetBtn = document.getElementById('finish-set-btn');
-    const resetSessionBtn = document.getElementById('reset-session-btn');
-    const setsHistoryContainer = document.getElementById('sets-history');
+
+    // Elements - Session Management
+    const finishSessionBtn = document.getElementById('finish-session-btn');
+    const startNewSessionBtn = document.getElementById('start-new-session-btn');
+    const resetSessionSmallBtn = document.getElementById('reset-session-small-btn');
+    const summaryTotalEl = document.getElementById('final-total');
+    const summaryListEl = document.getElementById('summary-history-list');
+
+    // Views
+    const views = {
+        active: document.getElementById('active-session-view'),
+        summary: document.getElementById('summary-view')
+    };
 
     // Config
     const ITEM_HEIGHT = 60; // Must match CSS
@@ -16,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadState();
     initPicker();
     renderHistory();
+
 
     // --- Picker Logic ---
 
@@ -67,18 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update state
             currentCount = index;
-            // Note: We don't save to localStorage on every scroll to avoid spam, 
-            // but we could if needed. For now, saving on 'Log Set' is safer?
-            // Actually, usability wise, saving current selection is good.
             localStorage.setItem('pushupCurrent', currentCount);
         }, 50); // Debounce slightly
     }
 
     function updateActiveItem(index) {
         // The list shares padding, so index 0 in data is actual child index 1 (because of top padding)
-        // Children: [Pad, 0, 1, 2, ...]
-        // Target is child[index + 1]
-
         const items = scrollContainer.querySelectorAll('li');
         items.forEach(item => item.classList.remove('active'));
 
@@ -97,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateActiveItem(val);
     }
 
+
     // --- Main Actions ---
 
     finishSetBtn.addEventListener('click', () => {
@@ -110,42 +119,120 @@ document.addEventListener('DOMContentLoaded', () => {
             saveState();
             renderHistory();
             scrollToBottom();
-
-            // Optional: Reset picker to 0 or keep typical number?
-            // Usually keeping it is nice, but user might want to reset?
-            // Let's reset to a "ready" state, maybe Keep it as is for repitition,
-            // or reset to 0. Let's keep it, allows rapid logging of same reps.
         }
     });
 
-    resetSessionBtn.addEventListener('click', () => {
-        if (confirm('Start a new session?')) {
-            sets = [];
-            currentCount = 0;
-            saveState();
-            renderHistory();
-            scrollToValue(0); // Reset picker
+    finishSessionBtn.addEventListener('click', () => {
+        if (sets.length === 0) {
+            alert("Do some pushups first!");
+            return;
+        }
+        showSummary();
+    });
+
+    startNewSessionBtn.addEventListener('click', () => {
+        if (confirm('Start a fresh session?')) {
+            startNewSession();
         }
     });
+
+    if (resetSessionSmallBtn) {
+        resetSessionSmallBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset this session? All progress will be lost.')) {
+                startNewSession();
+            }
+        });
+    }
+
 
     // --- Core Functions ---
 
-    function renderHistory() {
-        setsHistoryContainer.innerHTML = '';
-        let total = 0;
+    function showSummary() {
+        // Switch Views, but check if elements exist first
+        if (!views.active || !views.summary) return;
 
-        if (sets.length === 0) {
-            setsHistoryContainer.innerHTML = '<div class="empty-state">No sets yet</div>';
-        } else {
+        views.active.classList.add('hidden');
+        views.summary.classList.remove('hidden');
+
+        // Populate Data
+        let total = sets.reduce((a, b) => a + b, 0);
+        if (summaryTotalEl) summaryTotalEl.textContent = total;
+
+        // Populate Summary List (Clone rendering logic but for all items)
+        if (summaryListEl) {
+            summaryListEl.innerHTML = '';
             sets.forEach((count, index) => {
-                total += count;
                 const setEl = document.createElement('div');
                 setEl.className = 'set-item';
                 setEl.innerHTML = `
                     <span class="set-label">Set ${index + 1}</span>
                     <span class="set-count">${count}</span>
                 `;
+                summaryListEl.appendChild(setEl);
+            });
+        }
+    }
+
+    function startNewSession() {
+        // Reset State
+        sets = [];
+        currentCount = 0;
+        saveState();
+
+        // Reset UI
+        renderHistory(); // clear active list
+        scrollToValue(0); // reset picker
+
+        // Switch Views
+        if (views.active && views.summary) {
+            views.summary.classList.add('hidden');
+            views.active.classList.remove('hidden');
+        }
+    }
+
+    function renderHistory() {
+        if (!setsHistoryContainer) return;
+
+        setsHistoryContainer.innerHTML = '';
+        let total = 0;
+
+        // Calculate total from all sets
+        sets.forEach(count => total += count);
+
+        if (sets.length === 0) {
+            setsHistoryContainer.innerHTML = '<div class="empty-state">No sets yet</div>';
+        } else {
+            // Only show last 3 sets
+            const startIndex = Math.max(0, sets.length - 3);
+            const visibleSets = sets.slice(startIndex);
+
+            // Add indicator if sets are hidden
+            if (startIndex > 0) {
+                const hiddenEl = document.createElement('div');
+                hiddenEl.className = 'empty-state'; // Reuse style for simplicity
+                hiddenEl.style.marginTop = '0';
+                hiddenEl.style.marginBottom = '0.5rem';
+                hiddenEl.style.fontSize = '0.8rem';
+                hiddenEl.textContent = `... ${startIndex} earlier sets hidden`;
+                setsHistoryContainer.appendChild(hiddenEl);
+            }
+
+            visibleSets.forEach((count, i) => {
+                const realIndex = startIndex + i;
+                const setEl = document.createElement('div');
+                setEl.className = 'set-item';
+                setEl.innerHTML = `
+                    <span class="set-label">Set ${realIndex + 1}</span>
+                    <span class="set-count">${count}</span>
+                `;
                 setsHistoryContainer.appendChild(setEl);
+
+                // Add slide-in animation specifically for the newest one
+                if (realIndex === sets.length - 1) {
+                    setEl.style.animation = 'slideIn 0.3s ease-out';
+                } else {
+                    setEl.style.animation = 'none'; // Prevent re-animating old ones on re-render
+                }
             });
         }
 
@@ -173,6 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function scrollToBottom() {
-        setsHistoryContainer.scrollTop = setsHistoryContainer.scrollHeight;
+        if (setsHistoryContainer) {
+            setsHistoryContainer.scrollTop = setsHistoryContainer.scrollHeight;
+        }
     }
 });
