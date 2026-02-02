@@ -24,9 +24,10 @@ body {
     color: var(--text-primary);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-y: auto;
+    padding: 1rem 0;
 }
 
 .container {
@@ -43,9 +44,8 @@ body {
     position: relative;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    height: 85vh;
-    /* Taller to fit list */
-    max-height: 800px;
+    min-height: auto;
+    /* Allow natural height */
 }
 
 /* Header Layout */
@@ -104,11 +104,11 @@ header h1 {
 
 /* History List Section */
 .sets-history {
-    flex-grow: 1;
-    /* Keep it flexible but constrained by container max-height */
-    /* Or better, let's limit it strictly since we only show 3 items now */
-    max-height: 150px;
-    /* Approx 3 items - compressed */
+    flex-grow: 0;
+    flex-shrink: 0;
+    /* Fixed height for 2 items */
+    max-height: 75px;
+    /* Approx 2 items */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -118,8 +118,6 @@ header h1 {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 12px;
     margin-bottom: 0.25rem;
-    flex-shrink: 1;
-    /* Allow shrinking */
 }
 
 .set-item {
@@ -148,7 +146,7 @@ header h1 {
     color: var(--text-secondary);
     font-style: italic;
     opacity: 0.5;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 
 /* Current Set Section */
