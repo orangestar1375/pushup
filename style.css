@@ -24,9 +24,10 @@ body {
     color: var(--text-primary);
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-y: auto;
+    padding: 1rem 0;
 }
 
 .container {
@@ -43,9 +44,8 @@ body {
     position: relative;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    height: 85vh;
-    /* Taller to fit list */
-    max-height: 800px;
+    min-height: auto;
+    /* Allow natural height */
 }
 
 /* Header Layout */
@@ -104,32 +104,30 @@ header h1 {
 
 /* History List Section */
 .sets-history {
-    flex-grow: 1;
-    /* Keep it flexible but constrained by container max-height */
-    /* Or better, let's limit it strictly since we only show 3 items now */
-    max-height: 220px;
-    /* Approx 3 items */
+    flex-grow: 0;
+    flex-shrink: 0;
+    /* Fixed height for 2 items */
+    max-height: 75px;
+    /* Approx 2 items */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.25rem;
     /* Tighter gap */
-    padding: 0.75rem;
+    padding: 0.5rem;
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 16px;
-    margin-bottom: 0.5rem;
-    flex-shrink: 1;
-    /* Allow shrinking */
+    border-radius: 12px;
+    margin-bottom: 0.25rem;
 }
 
 .set-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
+    padding: 0.4rem 0.75rem;
     background: rgba(255, 255, 255, 0.05);
-    border-radius: 12px;
-    font-size: 1.1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 500;
     animation: slideIn 0.3s ease-out;
 }
@@ -141,14 +139,14 @@ header h1 {
 .set-item .set-count {
     color: var(--accent-color);
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
 
 .empty-state {
     color: var(--text-secondary);
     font-style: italic;
     opacity: 0.5;
-    margin-top: 2rem;
+    margin-top: 0.5rem;
 }
 
 /* Current Set Section */
